@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 import classes from "./MainNavigation.module.css"
 
 export default function MainNavigation() {
@@ -8,10 +10,10 @@ export default function MainNavigation() {
             <nav>
                 <ul>
                     <li>
-                        <link to="/">All Meetups</link>
+                        <Link href="/">All Meetups</Link> {/**<Link> component prevents send new requests to reload the full-page */}
                     </li>
                     <li>
-                        <link to="/new-meetup">New Meetup</link>
+                        <Link href="/new-meetup">New Meetup</Link>
                     </li>
                 </ul>
             </nav>
