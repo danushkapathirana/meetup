@@ -23,13 +23,15 @@ export default function Page(props) {
     )
 }
 
-// page pre-rendering with data via static site generation (SSG)
-export const getStaticProps = async() => {
+// server side rendering (SSR)
+export const getServerSideProps = async(context) => {
+    const request = context.req
+    const response = context.res
+
     return{
         props: {
             meetups: DUMMY_MEETUPS
-        },
-        revalidate: 10
+        }
     }
 }
 
@@ -54,4 +56,14 @@ export const getStaticProps = async() => {
  * 
  * revalidate option regenerates the page after 10 seconds on the server if there's a request
  * this helps keep the page updated without rebuilding (ISR: Incremental Static Regeneration)
+ * 
+ * 
+ * Server Side Rendering (SSR)
+ * 
+ * what is SSR? generates HTML page for every incoming requests on the fly after the deployment on the server
+ * 
+ * getServerSideProps(), this function does not run at build time but on the server after deployment
+ * 
+ * - use this to access complete request and response object,
+ *   or if the content changes very frequently
  */
