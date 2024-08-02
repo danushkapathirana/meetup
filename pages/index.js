@@ -17,8 +17,41 @@ const DUMMY_MEETUPS = [
     }
 ]
 
-export default function Page() {
+export default function Page(props) {
     return(
-        <MeetupList meetups={DUMMY_MEETUPS} />
+        <MeetupList meetups={props.meetups} />
     )
 }
+
+// page pre-rendering with data via static site generation (SSG)
+export const getStaticProps = async() => {
+    return{
+        props: {
+            meetups: DUMMY_MEETUPS
+        },
+        revalidate: 10
+    }
+}
+
+
+/**
+ * note
+ * 
+ * Static Site Generation (SSG)
+ * 
+ * what is SSG? pre-renders the page at build time
+ * 
+ * what is pre-rendering? generates HTML at build time or request time
+ * 
+ * getStaticProps(),
+ * - fetch data before the page is built and passes it as props
+ *   to the component. it runs at build time on the server and never on the client
+ * 
+ * - since it runs on the server, use it to securely access server side resources
+ *   (like a file system or a database)
+ * 
+ * what happens when more meetups are added after the build is completed? (hint: outdated data)
+ * 
+ * revalidate option regenerates the page after 10 seconds on the server if there's a request
+ * this helps keep the page updated without rebuilding (ISR: Incremental Static Regeneration)
+ */
