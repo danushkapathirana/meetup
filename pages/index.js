@@ -1,21 +1,6 @@
-import MeetupList from "../components/meetup/MeetupList"
+import { MongoClient } from "mongodb"
 
-const DUMMY_MEETUPS = [
-    {
-        id: "M1",
-        title: "Become a Pro in Frontend",
-        image: "https://fred.dev/content/uploads/Meetup-Logo-1300x730-1.png",
-        address: "HCL Technologies Lanka, 00200 Glennie St, Colombo 00200",
-        description: "Master the Art of Frontend Development! Join us for a hands-on meetup to elevate your skills and become a pro."
-    },
-    {
-        id: "M2",
-        title: "Berlin Meetup",
-        image: "https://cdn.prod.website-files.com/5e9aa66fd3886aa2b4ec01ca/6482ef561f4ec6248ab0fac9_meetup%20berlin%20(1).png",
-        address: "Berlin, Germany",
-        description: "Join Us for a Berlin Get-Together! Connect with like-minded individuals, enjoy engaging conversations, and expand your network in a relaxed and friendly atmosphere."
-    }
-]
+import MeetupList from "../components/meetup/MeetupList"
 
 export default function Page(props) {
     return(
@@ -23,15 +8,31 @@ export default function Page(props) {
     )
 }
 
-// server side rendering (SSR)
-export const getServerSideProps = async(context) => {
-    const request = context.req
-    const response = context.res
+export const getStaticProps = async() => {
+    /**
+     * - in this code we avoid using "fetch" to
+     *   retrieve data from our own API endpoint
+     *   because this code runs on the server
+     */
+    const client = await MongoClient.connect(process.env.URL)
+    const database = client.db()
+    const collection = database.collection("meetups")
+    const meetups = await collection.find().toArray()
+    client.close()
 
     return{
         props: {
-            meetups: DUMMY_MEETUPS
-        }
+            meetups: meetups.map((meetup) => (
+                {
+                    id: meetup._id.toString(),
+                    title: meetup.title,
+                    image: meetup.image,
+                    address: meetup.address,
+                    description: meetup.description
+                }
+            ))
+        },
+        revalidate: 10
     }
 }
 
